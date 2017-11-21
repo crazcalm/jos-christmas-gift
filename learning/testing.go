@@ -12,20 +12,41 @@ func layout(g *gocui.Gui) error {
 		return err
 	}
 
-	_, err = g.SetView("answerA", -1, int(0.5*float32(maxY)), int(0.5*float32(maxX)), int(0.75*float32(maxY)))
+	//Answer Box A
+	answerA, err := g.SetView("answerA", -1, int(0.5*float32(maxY)), int(0.5*float32(maxX)), int(0.75*float32(maxY)))
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
+	answerA.Title = "A"
+	answerA.Editable = false
+	answerA.Wrap = true
 
-	_, err = g.SetView("answerB", int(0.5*float32(maxX)), int(0.5*float32(maxY)), maxX, int(0.75*float32(maxY)))
+	//Answer Box B
+	answerB, err := g.SetView("answerB", int(0.5*float32(maxX)), int(0.5*float32(maxY)), maxX, int(0.75*float32(maxY)))
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
+	answerB.Title = "B"
+	answerB.Editable = false
+	answerB.Wrap = true
 
-	_, err = g.SetView("answerC", -1, int(0.75*float32(maxY)), int(0.5*float32(maxX)), maxY)
+	//Answer Box C
+	answerC, err := g.SetView("answerC", -1, int(0.75*float32(maxY)), int(0.5*float32(maxX)), maxY)
 	if err != nil && err != gocui.ErrUnknownView {
 		return err
 	}
+	answerC.Title = "C"
+	answerC.Editable = false
+	answerC.Wrap = true
+
+	//Answer Box D
+	answerD, err := g.SetView("answerD", int(0.5*float32(maxX)), int(0.75*float32(maxY)), maxX, maxY)
+	if err != nil && err != gocui.ErrUnknownView {
+		return err
+	}
+	answerD.Title = "D"
+	answerD.Editable = false
+	answerD.Wrap = false
 
 	return nil
 }
