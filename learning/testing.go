@@ -20,6 +20,11 @@ var (
 	activeView = 0
 )
 
+func selectAnswer(g *gocui.Gui, v *gocui.View) error {
+	fmt.Fprintln(v, "Selected")
+	return nil
+}
+
 func nextView(g *gocui.Gui, v *gocui.View) error {
 	nextIndex := (activeView + 1) % len(boxesView)
 	name := boxesView[nextIndex]
@@ -153,6 +158,14 @@ func main() {
 	err = g.SetKeybinding("", gocui.KeyTab, gocui.ModNone, nextView)
 	if err != nil {
 		log.Panicln(err)
+	}
+
+	//Select an Answer
+	for _, view := range boxesView {
+		err = g.SetKeybinding(view, gocui.KeyEnter, gocui.ModNone, selectAnswer)
+		if err != nil {
+			log.Panicln(err)
+		}
 	}
 
 	err = g.MainLoop()
