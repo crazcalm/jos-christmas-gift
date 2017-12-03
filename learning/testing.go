@@ -1,14 +1,14 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
 	"github.com/jroimartin/gocui"
-	"log"
-	"strings"
-	"os"
-	"encoding/csv"
-	"io/ioutil"
 	"io"
+	"io/ioutil"
+	"log"
+	"os"
+	"strings"
 )
 
 const (
@@ -22,21 +22,31 @@ const (
 
 //Answer -- struct to hold an answer
 type Answer struct {
-	Answer string
+	Answer  string
 	Correct bool
 }
 
 //Question -- struct to hold a question and its answers
 type Question struct {
-	Question string
-	Answers []Answer
+	Question     string
+	Answers      []Answer
 	Explaination string
 }
 
+//UserAnswer  -- struct to hold individual answers made by the user
+type UserAnswer struct {
+	AnswerBox string
+	Question  *Question
+	Answer    *Answer
+}
+
 var (
-	boxesView  = []string{boxA, boxB, boxC, boxD}
-	activeView = 0
-	questions = []Question{}
+	boxesView         = []string{boxA, boxB, boxC, boxD}
+	activeView        = 0
+	questions         = []Question{}
+	questionCount     = 0
+	answersToBoxViews = make(map[string]Answer)
+	userAnswers       = []UserAnswer{}
 )
 
 func readCSV() [][]string {
@@ -50,7 +60,7 @@ func readCSV() [][]string {
 	}
 	testFile := files[1].Name()
 	_, err = os.Stat(testFile)
-	if os.IsNotExist(err){
+	if os.IsNotExist(err) {
 		log.Fatalf("file: %s does not exist", testFile)
 	}
 
@@ -71,20 +81,20 @@ func readCSV() [][]string {
 			log.Fatal(err)
 		}
 		fmt.Println(record)
-		records = append(records, record)		
+		records = append(records, record)
 	}
 
 	return records
 }
 
 func createQuestions(records [][]string) {
-	for i:=1; i < len(records); i++ {
+	for i := 1; i < len(records); i++ {
 
 		a1 := Answer{records[i][1], true}
 		a2 := Answer{records[i][2], false}
 		a3 := Answer{records[i][3], false}
 		a4 := Answer{records[i][4], false}
-	
+
 		question := Question{
 			records[i][0],
 			[]Answer{a1, a2, a3, a4},
@@ -92,6 +102,39 @@ func createQuestions(records [][]string) {
 		}
 		questions = append(questions, question)
 	}
+}
+
+func currentQuestion() Question {
+	return questions[questionCount]
+}
+
+func nextQuestion() (q Question, err error) {
+	if questionCount >= len(questions)-1 {
+		err = fmt.Errorf("No more questions")
+		return q, err
+	}
+
+	questionCount = questionCount + 1
+	return questions[questionCount], err
+}
+
+func writeInfoToLayout(g *gocui.Gui, q Question) {
+	//Write question
+	questionBox := getQuestionBoxView(g)
+	fmt.Fprintln(questionBox, q.Question)
+
+	//Write answers
+	answerBoxViews := getAnswerBoxViews(g)
+	for i, answer := range q.Answers {
+		answerBoxViews[i].Clear()
+
+		//Adding it to the map
+		answersToBoxViews[answerBoxViews[i].Name()] = answer
+
+		//Write the answer to the layout
+		fmt.Fprintln(answerBoxViews[i], answer.Answer)
+	}
+
 }
 
 func isViewInSlice(viewNames []string, v *gocui.View) bool {
@@ -107,22 +150,58 @@ func isViewInSlice(viewNames []string, v *gocui.View) bool {
 func selectAnswer(g *gocui.Gui, v *gocui.View) error {
 	fmt.Fprintln(v, "Selected")
 
+	cQuestion := currentQuestion()
+	selectedAnswer := answersToBoxViews[v.Name()]
+
+	a := UserAnswer{
+		v.Name(),
+		&cQuestion,
+		&selectedAnswer,
+	}
+
+	//User answers
+	userAnswers = append(userAnswers, a)
+
 	views := g.Views()
+	question, err := nextQuestion()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//Write Question and Answers to layout
+	writeInfoToLayout(g, question)
+
 	for i, view := range views {
 
-		//Find the question answer boxes
-		if isViewInSlice(boxesView, view){
-			view.Clear() //clear the box
-			fmt.Fprintf(view, "%d - %s -- changed!", i, view.Name())
-		}
-
-		if strings.EqualFold(questionBox,view.Name()){
-			view.Clear()  //clear the question box
+		if strings.EqualFold(questionBox, view.Name()) {
+			view.Clear() //clear the question box
 			fmt.Fprintf(view, "%d - %s -- question box", i, view.Name())
 		}
-		
+
 	}
 	return nil
+}
+
+func getQuestionBoxView(g *gocui.Gui) *gocui.View {
+	var result *gocui.View
+	views := g.Views()
+	for _, view := range views {
+		if strings.EqualFold(questionBox, view.Name()) {
+			result = view
+		}
+	}
+	return result
+}
+
+func getAnswerBoxViews(g *gocui.Gui) []*gocui.View {
+	var questionViews []*gocui.View
+	views := g.Views()
+	for _, view := range views {
+		if isViewInSlice(boxesView, view) {
+			questionViews = append(questionViews, view)
+		}
+	}
+	return questionViews
 }
 
 func nextView(g *gocui.Gui, v *gocui.View) error {
@@ -133,15 +212,6 @@ func nextView(g *gocui.Gui, v *gocui.View) error {
 	if err != nil {
 		log.Panicln(err)
 	}
-
-	/*
-		//Debug
-		out, err := g.View(boxB)
-		if err != nil {
-			return nil
-		}
-		fmt.Fprintln(out, "Going from view "+v.Name()+" to "+name)
-	*/
 
 	activeView = nextIndex
 	return nil
@@ -169,7 +239,7 @@ func layout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Question"
-		fmt.Fprintln(v, questions[0].Question)
+		fmt.Fprintln(v, questions[questionCount].Question)
 	}
 
 	//Answer Box A
@@ -182,7 +252,7 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 
-		fmt.Fprintln(v, "Answer A")
+		fmt.Fprintln(v, questions[questionCount].Answers[0].Answer)
 
 		if _, err := setCurrentViewOnTop(g, boxA); err != nil {
 			return err
@@ -199,7 +269,7 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 
-		fmt.Fprintln(v, "Answer B")
+		fmt.Fprintln(v, questions[questionCount].Answers[1].Answer)
 
 	}
 
@@ -212,7 +282,7 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 
-		fmt.Fprintln(v, "Answer C")
+		fmt.Fprintln(v, questions[questionCount].Answers[2].Answer)
 	}
 
 	//Answer Box D
@@ -224,7 +294,7 @@ func layout(g *gocui.Gui) error {
 		v.Editable = false
 		v.Wrap = true
 
-		fmt.Fprintln(v, "Answer D")
+		fmt.Fprintln(v, questions[questionCount].Answers[3].Answer)
 	}
 
 	return nil
@@ -241,7 +311,7 @@ func main() {
 		log.Fatal("unable to read csv file")
 	}
 	fmt.Println(data)
-	createQuestions(data)	
+	createQuestions(data)
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
