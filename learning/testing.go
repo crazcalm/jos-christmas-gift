@@ -18,6 +18,7 @@ const (
 	boxD          = "answerD"
 	questionFrame = "questionFrame"
 	questionBox   = "question"
+	endScreen = "gameOver"
 )
 
 //Answer -- struct to hold an answer
@@ -108,6 +109,14 @@ func currentQuestion() Question {
 	return questions[questionCount]
 }
 
+func nextQuestionExist() bool {
+	result := false
+	if questionCount < len(questions) - 1 {
+		result = true
+	}
+	return result
+}
+
 func nextQuestion() (q Question, err error) {
 	if questionCount >= len(questions)-1 {
 		err = fmt.Errorf("No more questions")
@@ -163,6 +172,15 @@ func selectAnswer(g *gocui.Gui, v *gocui.View) error {
 	userAnswers = append(userAnswers, a)
 
 	views := g.Views()
+
+	if !nextQuestionExist(){
+		g.SetManagerFunc(endScreenLayout)
+		err := g.SetKeybinding("", gocui.KeyCtrlC,gocui.ModNone, quit)
+		if err != nil {
+			log.Fatal(err)
+		}
+		return nil
+	}
 	question, err := nextQuestion()
 	if err != nil {
 		log.Fatal(err)
@@ -224,6 +242,19 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 	}
 	return g.SetViewOnTop(name)
 
+}
+
+func endScreenLayout(g *gocui.Gui) error {
+	maxX, maxY := g.Size()
+	if v, err := g.SetView(endScreen, -1, -1, maxX, maxY); err != nil {
+		if err != gocui.ErrUnknownView {
+			return err
+		}
+
+		v.Title = "Quiz Over"
+		fmt.Fprintln(v, "End of quiz")
+	}
+	return nil
 }
 
 func layout(g *gocui.Gui) error {
@@ -323,7 +354,7 @@ func main() {
 	g.Highlight = true
 	g.SelFgColor = gocui.ColorGreen
 
-	//Pass in the layout I want ot use
+	//Pass in the layout I want to use
 	g.SetManagerFunc(layout)
 
 	//Quit Keybinding
