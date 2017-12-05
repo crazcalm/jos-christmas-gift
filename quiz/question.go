@@ -39,3 +39,21 @@ func nextQuestion() (q Question, err error) {
 	QuestionCount = QuestionCount + 1
 	return Questions[QuestionCount], err
 }
+
+//CreateQuestions -- Creates the questions that are stored in the Questions variable
+func CreateQuestions(records [][]string) {
+	for i := 1; i < len(records); i++ {
+
+		a1 := Answer{records[i][1], true}
+		a2 := Answer{records[i][2], false}
+		a3 := Answer{records[i][3], false}
+		a4 := Answer{records[i][4], false}
+
+		question := Question{
+			records[i][0],
+			[]Answer{a1, a2, a3, a4},
+			records[i][5],
+		}
+		Questions = append(Questions, question)
+	}
+}
