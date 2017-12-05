@@ -59,7 +59,7 @@ func readCSV() [][]string {
 	for _, f := range files {
 		fmt.Println(f.Name())
 	}
-	testFile := files[1].Name()
+	testFile := "testing.csv"
 	_, err = os.Stat(testFile)
 	if os.IsNotExist(err) {
 		log.Fatalf("file: %s does not exist", testFile)
