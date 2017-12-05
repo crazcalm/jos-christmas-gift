@@ -142,7 +142,7 @@ func getAnswerBoxViews(g *gocui.Gui) []*gocui.View {
 func isViewInSlice(viewNames []string, v *gocui.View) bool {
 	result := false
 	for _, name := range viewNames {
-		if strings.EqualFold(name, v.Name()) == true {
+		if strings.EqualFold(name, v.Name()) {
 			result = true
 		}
 	}
