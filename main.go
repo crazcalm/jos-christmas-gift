@@ -9,45 +9,16 @@ import (
 	"log"
 	"os"
 	"strings"
+	"github.com/crazcalm/jos-christmas-gift/quiz"
 )
-
-const (
-	boxA          = "answerA"
-	boxB          = "answerB"
-	boxC          = "answerC"
-	boxD          = "answerD"
-	questionFrame = "questionFrame"
-	questionBox   = "question"
-	endScreen = "gameOver"
-)
-
-//Answer -- struct to hold an answer
-type Answer struct {
-	Answer  string
-	Correct bool
-}
-
-//Question -- struct to hold a question and its answers
-type Question struct {
-	Question     string
-	Answers      []Answer
-	Explaination string
-}
-
-//UserAnswer  -- struct to hold individual answers made by the user
-type UserAnswer struct {
-	AnswerBox string
-	Question  *Question
-	Answer    *Answer
-}
 
 var (
-	boxesView         = []string{boxA, boxB, boxC, boxD}
+	boxesView         = []string{quiz.BoxA, quiz.BoxB, quiz.BoxC, quiz.BoxD}
 	activeView        = 0
-	questions         = []Question{}
+	questions         = []quiz.Question{}
 	questionCount     = 0
-	answersToBoxViews = make(map[string]Answer)
-	userAnswers       = []UserAnswer{}
+	answersToBoxViews = make(map[string]quiz.Answer)
+	userAnswers       = []quiz.UserAnswer{}
 )
 
 func readCSV() [][]string {
@@ -91,21 +62,21 @@ func readCSV() [][]string {
 func createQuestions(records [][]string) {
 	for i := 1; i < len(records); i++ {
 
-		a1 := Answer{records[i][1], true}
-		a2 := Answer{records[i][2], false}
-		a3 := Answer{records[i][3], false}
-		a4 := Answer{records[i][4], false}
+		a1 := quiz.Answer{records[i][1], true}
+		a2 := quiz.Answer{records[i][2], false}
+		a3 := quiz.Answer{records[i][3], false}
+		a4 := quiz.Answer{records[i][4], false}
 
-		question := Question{
+		question := quiz.Question{
 			records[i][0],
-			[]Answer{a1, a2, a3, a4},
+			[]quiz.Answer{a1, a2, a3, a4},
 			records[i][5],
 		}
 		questions = append(questions, question)
 	}
 }
 
-func currentQuestion() Question {
+func currentQuestion() quiz.Question {
 	return questions[questionCount]
 }
 
@@ -117,7 +88,7 @@ func nextQuestionExist() bool {
 	return result
 }
 
-func nextQuestion() (q Question, err error) {
+func nextQuestion() (q quiz.Question, err error) {
 	if questionCount >= len(questions)-1 {
 		err = fmt.Errorf("No more questions")
 		return q, err
@@ -127,7 +98,7 @@ func nextQuestion() (q Question, err error) {
 	return questions[questionCount], err
 }
 
-func writeInfoToLayout(g *gocui.Gui, q Question) {
+func writeInfoToLayout(g *gocui.Gui, q quiz.Question) {
 	//Write question
 	questionBox := getQuestionBoxView(g)
 	fmt.Fprintln(questionBox, q.Question)
@@ -162,7 +133,7 @@ func selectAnswer(g *gocui.Gui, v *gocui.View) error {
 	cQuestion := currentQuestion()
 	selectedAnswer := answersToBoxViews[v.Name()]
 
-	a := UserAnswer{
+	a := quiz.UserAnswer{
 		v.Name(),
 		&cQuestion,
 		&selectedAnswer,
@@ -191,7 +162,7 @@ func selectAnswer(g *gocui.Gui, v *gocui.View) error {
 
 	for i, view := range views {
 
-		if strings.EqualFold(questionBox, view.Name()) {
+		if strings.EqualFold(quiz.QuestionBox, view.Name()) {
 			view.Clear() //clear the question box
 			fmt.Fprintf(view, "%d - %s -- question box", i, view.Name())
 		}
@@ -204,7 +175,7 @@ func getQuestionBoxView(g *gocui.Gui) *gocui.View {
 	var result *gocui.View
 	views := g.Views()
 	for _, view := range views {
-		if strings.EqualFold(questionBox, view.Name()) {
+		if strings.EqualFold(quiz.QuestionBox, view.Name()) {
 			result = view
 		}
 	}
@@ -246,7 +217,7 @@ func setCurrentViewOnTop(g *gocui.Gui, name string) (*gocui.View, error) {
 
 func endScreenLayout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView(endScreen, -1, -1, maxX, maxY); err != nil {
+	if v, err := g.SetView(quiz.EndScreen, -1, -1, maxX, maxY); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -259,13 +230,13 @@ func endScreenLayout(g *gocui.Gui) error {
 
 func layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if _, err := g.SetView(questionFrame, -1, -1, maxX, int(0.5*float32(maxY))); err != nil {
+	if _, err := g.SetView(quiz.QuestionFrame, -1, -1, maxX, int(0.5*float32(maxY))); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 	}
 
-	if v, err := g.SetView(questionBox, int(0.2*float32(maxX)), int(0.1*float32(maxY)), int(0.8*float32(maxX)), int(0.4*float32(maxY))); err != nil {
+	if v, err := g.SetView(quiz.QuestionBox, int(0.2*float32(maxX)), int(0.1*float32(maxY)), int(0.8*float32(maxX)), int(0.4*float32(maxY))); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -274,7 +245,7 @@ func layout(g *gocui.Gui) error {
 	}
 
 	//Answer Box A
-	if v, err := g.SetView(boxA, -1, int(0.5*float32(maxY)), int(0.5*float32(maxX)), int(0.73*float32(maxY))); err != nil {
+	if v, err := g.SetView(quiz.BoxA, -1, int(0.5*float32(maxY)), int(0.5*float32(maxX)), int(0.73*float32(maxY))); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -285,13 +256,13 @@ func layout(g *gocui.Gui) error {
 
 		fmt.Fprintln(v, questions[questionCount].Answers[0].Answer)
 
-		if _, err := setCurrentViewOnTop(g, boxA); err != nil {
+		if _, err := setCurrentViewOnTop(g, quiz.BoxA); err != nil {
 			return err
 		}
 	}
 
 	//Answer Box B
-	if v, err := g.SetView(boxB, int(0.5*float32(maxX)), int(0.5*float32(maxY)), maxX, int(0.73*float32(maxY))); err != nil {
+	if v, err := g.SetView(quiz.BoxB, int(0.5*float32(maxX)), int(0.5*float32(maxY)), maxX, int(0.73*float32(maxY))); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -305,7 +276,7 @@ func layout(g *gocui.Gui) error {
 	}
 
 	//Answer Box C
-	if v, err := g.SetView(boxC, -1, int(0.77*float32(maxY)), int(0.5*float32(maxX)), maxY); err != nil {
+	if v, err := g.SetView(quiz.BoxC, -1, int(0.77*float32(maxY)), int(0.5*float32(maxX)), maxY); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -317,7 +288,7 @@ func layout(g *gocui.Gui) error {
 	}
 
 	//Answer Box D
-	if v, err := g.SetView(boxD, int(0.5*float32(maxX)), int(0.77*float32(maxY)), maxX, maxY); err != nil {
+	if v, err := g.SetView(quiz.BoxD, int(0.5*float32(maxX)), int(0.77*float32(maxY)), maxX, maxY); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
