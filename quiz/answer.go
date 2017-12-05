@@ -1,14 +1,18 @@
 package quiz
 
+var (
+	userAnswers = []UserAnswer{}
+)
+
 //Answer -- struct to hold an answer
 type Answer struct {
-	Answer string
-	Correct	bool
+	Answer  string
+	Correct bool
 }
 
 //UserAnswer -- struct to hold individual answers made by the user
 type UserAnswer struct {
-	Answer	string
-	Question *Question
-	UserAnswer	*Answer
+	Answer     string
+	Question   *Question
+	UserAnswer *Answer
 }
