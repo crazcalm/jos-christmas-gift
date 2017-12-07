@@ -5,6 +5,30 @@ import (
 	"testing"
 )
 
+func TestShuffleAnswers(t *testing.T) {
+	a1 := Answer{"1", true}
+	a2 := Answer{"2", true}
+	a3 := Answer{"3", true}
+	a4 := Answer{"4", true}
+
+	q := Question{"question", []Answer{a1, a2, a3, a4}, ""}
+
+	shuffled := false
+
+	for i := 0; i < 10; i++ {
+		q.ShuffleAnswers()
+
+		if !strings.EqualFold(a1.Answer, q.Answers[0].Answer) {
+			shuffled = true
+		}
+	}
+
+	if !shuffled {
+		t.Error("Question.ShuffleAnswers is not shuffling the Answers")
+	}
+
+}
+
 func TestcurrentQuestion(t *testing.T) {
 	a := Answer{"answer", true}
 

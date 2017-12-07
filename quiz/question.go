@@ -2,6 +2,7 @@ package quiz
 
 import (
 	"fmt"
+	"math/rand"
 )
 
 var (
@@ -16,6 +17,20 @@ type Question struct {
 	Question     string
 	Answers      []Answer
 	Explaination string
+}
+
+//ShuffleAnswers -- Does and in place shuffle of the answers
+func (q Question) ShuffleAnswers() {
+	numOfAnswers := len(q.Answers)
+	var tempt Answer
+	var swapIndex int
+
+	for index := range q.Answers {
+		swapIndex = rand.Intn(numOfAnswers)
+		tempt = q.Answers[index]
+		q.Answers[index] = q.Answers[swapIndex]
+		q.Answers[swapIndex] = tempt
+	}
 }
 
 func currentQuestion() Question {
@@ -59,6 +74,7 @@ func CreateQuestions(records [][]string) (err error) {
 			[]Answer{a1, a2, a3, a4},
 			records[i][5],
 		}
+		question.ShuffleAnswers()
 		Questions = append(Questions, question)
 	}
 	return
