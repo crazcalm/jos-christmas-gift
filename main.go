@@ -14,7 +14,10 @@ func main() {
 		log.Fatal("unable to read csv file")
 	}
 	fmt.Println(data)
-	quiz.CreateQuestions(data)
+	err := quiz.CreateQuestions(data)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {

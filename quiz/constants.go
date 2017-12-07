@@ -9,10 +9,10 @@ const (
 	BoxC = "answerC"
 	//BoxD -- name for answer box D
 	BoxD = "answerD"
-	//QuestionFrame -- name for the box holding the question section 
+	//QuestionFrame -- name for the box holding the question section
 	QuestionFrame = "questionFrame"
 	//QuestionBox -- name of the box holding the question
-	QuestionBox	= "question"
+	QuestionBox = "question"
 	//EndScreen -- name of the end screen box
 	EndScreen = "gameOver"
 )

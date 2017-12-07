@@ -41,7 +41,12 @@ func nextQuestion() (q Question, err error) {
 }
 
 //CreateQuestions -- Creates the questions that are stored in the Questions variable
-func CreateQuestions(records [][]string) {
+func CreateQuestions(records [][]string) (err error) {
+	if len(records) < 2 {
+		err = fmt.Errorf("The length of records is expected to be greater that 1. Current length is %d", len(records))
+		return
+	}
+
 	for i := 1; i < len(records); i++ {
 
 		a1 := Answer{records[i][1], true}
@@ -56,4 +61,5 @@ func CreateQuestions(records [][]string) {
 		}
 		Questions = append(Questions, question)
 	}
+	return
 }
