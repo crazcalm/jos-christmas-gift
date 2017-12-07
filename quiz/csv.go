@@ -4,35 +4,28 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 )
 
 //ReadCSV -- Parses csv file
-func ReadCSV() [][]string {
-	files, err := ioutil.ReadDir(".")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(files)
-	for _, f := range files {
-		fmt.Println(f.Name())
-	}
-	testFile := "testing.csv"
-	_, err = os.Stat(testFile)
+func ReadCSV(path string) (records [][]string, err error) {
+	//Make sure the file exists
+	_, err = os.Stat(path)
 	if os.IsNotExist(err) {
-		log.Fatalf("file: %s does not exist", testFile)
+		err = fmt.Errorf("file: %s does not exist", path)
+		return
 	}
 
-	file, err := os.Open(testFile)
+	//Open the file
+	file, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		return
 	}
 
+	//Read the file
 	r := csv.NewReader(file)
 
-	var records [][]string
 	for {
 		record, err := r.Read()
 		if err == io.EOF {
@@ -45,5 +38,5 @@ func ReadCSV() [][]string {
 		records = append(records, record)
 	}
 
-	return records
+	return
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/crazcalm/jos-christmas-gift/quiz"
 	"github.com/jroimartin/gocui"
 	"log"
@@ -9,12 +8,12 @@ import (
 
 func main() {
 	//Get questions
-	data := quiz.ReadCSV()
-	if len(data) == 0 {
-		log.Fatal("unable to read csv file")
+	data, err := quiz.ReadCSV("testing.csv")
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println(data)
-	err := quiz.CreateQuestions(data)
+
+	err = quiz.CreateQuestions(data)
 	if err != nil {
 		log.Fatal(err)
 	}

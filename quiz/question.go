@@ -3,7 +3,13 @@ package quiz
 import (
 	"fmt"
 	"math/rand"
+	"time"
 )
+
+func init() {
+	//Seeding the random number generator
+	rand.Seed(time.Now().UnixNano())
+}
 
 var (
 	//Questions -- A slice of questions

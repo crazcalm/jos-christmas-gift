@@ -29,7 +29,7 @@ func TestShuffleAnswers(t *testing.T) {
 
 }
 
-func TestcurrentQuestion(t *testing.T) {
+func TestCurrentQuestion(t *testing.T) {
 	a := Answer{"answer", true}
 
 	q1 := Question{"q1", []Answer{a, a, a, a}, "none"}
@@ -57,7 +57,7 @@ func TestcurrentQuestion(t *testing.T) {
 	}
 }
 
-func TestnextQuestion(t *testing.T) {
+func TestNextQuestion(t *testing.T) {
 	a := Answer{"answer", true}
 
 	q1 := Question{"q1", []Answer{a, a, a, a}, "none"}
@@ -96,7 +96,7 @@ func TestnextQuestion(t *testing.T) {
 	}
 }
 
-func TestnextQuestionExist(t *testing.T) {
+func TestNextQuestionExist(t *testing.T) {
 	a := Answer{"answer", true}
 	q1 := Question{"q1", []Answer{a, a, a, a}, "none"}
 	q2 := Question{"q2", []Answer{a, a, a, a}, "none"}
@@ -119,7 +119,7 @@ func TestnextQuestionExist(t *testing.T) {
 		answer := nextQuestionExist()
 
 		if answer != test.Result {
-			t.Errorf("Expected %b, but got %b", test.Result, answer)
+			t.Errorf("Expected %t, but got %t", test.Result, answer)
 		}
 	}
 }
