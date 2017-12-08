@@ -1,5 +1,9 @@
 package quiz
 
+import (
+	"strings"
+)
+
 var (
 	userAnswers = []UserAnswer{}
 )
@@ -15,4 +19,14 @@ type UserAnswer struct {
 	Answer     string
 	Question   *Question
 	UserAnswer *Answer
+}
+
+//IsAnswerCorrect -- returns whether or not the user's answer is correct
+func (u UserAnswer) IsAnswerCorrect() bool {
+	result := false
+	answer := u.Question.CorrectAnswer()
+	if strings.EqualFold(answer.Answer, u.UserAnswer.Answer) {
+		result = true
+	}
+	return result
 }
