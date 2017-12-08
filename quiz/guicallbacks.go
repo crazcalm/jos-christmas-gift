@@ -7,6 +7,34 @@ import (
 	"strings"
 )
 
+//CursorDown -- Callback used to scroll down
+func CursorDown(g *gocui.Gui, v *gocui.View) error {
+	if v != nil {
+		cx, cy := v.Cursor()
+		if err := v.SetCursor(cx, cy+1); err != nil {
+			ox, oy := v.Origin()
+			if err := v.SetOrigin(ox, oy+1); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+//CursorUp -- Callback used to scoll up
+func CursorUp(g *gocui.Gui, v *gocui.View) error {
+	if v != nil {
+		ox, oy := v.Origin()
+		cx, cy := v.Cursor()
+		if err := v.SetCursor(cx, cy-1); err != nil && oy > 0 {
+			if err := v.SetOrigin(ox, oy-1); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 //Quit -- Callback used to quit application
 func Quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
@@ -48,8 +76,21 @@ func SelectAnswer(g *gocui.Gui, v *gocui.View) error {
 		g.SetManagerFunc(endScreenLayout)
 		err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, Quit)
 		if err != nil {
-			log.Fatal(err)
+			log.Panicln(err)
+			return err
 		}
+		err = g.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, CursorDown)
+		if err != nil {
+			log.Panicln(err)
+			return err
+		}
+
+		err = g.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, CursorUp)
+		if err != nil {
+			log.Panicln(err)
+			return err
+		}
+
 		return nil
 	}
 	question, err := nextQuestion()

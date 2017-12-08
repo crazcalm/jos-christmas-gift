@@ -34,7 +34,7 @@ func main() {
 	//Quit Keybinding
 	err = g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quiz.Quit)
 	if err != nil {
-		log.Fatal(err)
+		log.Panicln(err)
 	}
 
 	//Toggle Answers Keybinding
