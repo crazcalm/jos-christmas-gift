@@ -5,6 +5,21 @@ import (
 	"testing"
 )
 
+func TestCorrectAnswer(t *testing.T) {
+	a1 := Answer{"a1", true}
+	a2 := Answer{"a2", false}
+	a3 := Answer{"a3", false}
+	a4 := Answer{"a4", false}
+
+	q := Question{"question", []Answer{a4, a3, a2, a1}, ""}
+	result := &q
+
+	answer := result.CorrectAnswer()
+	if !strings.EqualFold(a1.Answer, answer.Answer) {
+		t.Error("Unable to select the correct answer for this question")
+	}
+}
+
 func TestShuffleAnswers(t *testing.T) {
 	a1 := Answer{"1", true}
 	a2 := Answer{"2", true}
@@ -64,6 +79,8 @@ func TestNextQuestion(t *testing.T) {
 	q2 := Question{"q2", []Answer{a, a, a, a}, "none"}
 	q3 := Question{"q3", []Answer{a, a, a, a}, "none"}
 
+	Questions = []Question{}
+	QuestionCount = 0
 	Questions = append(Questions, q1, q2, q3)
 
 	var tests = []struct {
@@ -87,11 +104,13 @@ func TestNextQuestion(t *testing.T) {
 		}
 
 		if !strings.EqualFold(question.Question, test.NextQuestion.Question) {
-			t.Error("The question returned was not the expected question")
+			t.Errorf("Was expecting this question '%s' but got '%s'", test.NextQuestion.Question, question.Question)
+			return
 		}
 
 		if QuestionCount != test.Count {
 			t.Errorf("QuestionCount was expected to be %d, but was %d", test.Count, QuestionCount)
+			return
 		}
 	}
 }
@@ -102,6 +121,7 @@ func TestNextQuestionExist(t *testing.T) {
 	q2 := Question{"q2", []Answer{a, a, a, a}, "none"}
 	q3 := Question{"q3", []Answer{a, a, a, a}, "none"}
 
+	Questions = []Question{}
 	Questions = append(Questions, q1, q2, q3)
 
 	var tests = []struct {
@@ -110,7 +130,7 @@ func TestNextQuestionExist(t *testing.T) {
 	}{
 		{0, true},
 		{1, true},
-		{2, true},
+		{2, false},
 		{3, false},
 	}
 
@@ -119,7 +139,7 @@ func TestNextQuestionExist(t *testing.T) {
 		answer := nextQuestionExist()
 
 		if answer != test.Result {
-			t.Errorf("Expected %t, but got %t", test.Result, answer)
+			t.Errorf("Expected %t, but got %t: len(Questions) -- %d", test.Result, answer, len(Questions))
 		}
 	}
 }

@@ -25,6 +25,18 @@ type Question struct {
 	Explaination string
 }
 
+//CorrectAnswer -- returns the correct answer to the question
+func (q *Question) CorrectAnswer() Answer {
+	var result Answer
+	for _, a := range q.Answers {
+		if a.Correct {
+			result = a
+			break
+		}
+	}
+	return result
+}
+
 //ShuffleAnswers -- Does and in place shuffle of the answers
 func (q Question) ShuffleAnswers() {
 	numOfAnswers := len(q.Answers)
