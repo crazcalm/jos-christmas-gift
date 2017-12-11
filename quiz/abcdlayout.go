@@ -11,6 +11,7 @@ var (
 	BoxesView         = []string{BoxA, BoxB, BoxC, BoxD}
 	activeView        = 0
 	answersToBoxViews = make(map[string]Answer)
+	answersToLetters  = map[string]string{BoxA: "A", BoxB: "B", BoxC: "C", BoxD: "D"}
 )
 
 //SetCurrentViewOnTop -- helper... should be private...
