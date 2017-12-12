@@ -30,3 +30,16 @@ func (u UserAnswer) IsAnswerCorrect() bool {
 	}
 	return result
 }
+
+//TotalScore -- returns the number of correct answers and the total number of questions
+func TotalScore(answers []UserAnswer) (right, total int) {
+	total = len(answers)
+
+	for _, answer := range answers {
+		if answer.IsAnswerCorrect() {
+			right++
+		}
+	}
+
+	return
+}
