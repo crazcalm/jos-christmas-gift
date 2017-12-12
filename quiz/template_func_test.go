@@ -27,18 +27,19 @@ func TestPrintSolution(t *testing.T) {
 	}
 
 	var tests = []struct {
+		Num      int
 		User     UserAnswer
 		Expected []string
 	}{
-		{correctAnswer, []string{"Question: question", "You correctly selected A", "explanation"}},
-		{wrongAnswer, []string{"Question: question", "You selected C, which is wrong", "explanation"}},
+		{1, correctAnswer, []string{"1 --", "Question: question", "You correctly selected A", "explanation"}},
+		{2, wrongAnswer, []string{"2 --", "Question: question", "You selected C, which is wrong", "explanation"}},
 	}
 
 	//Used to check the results
 	b := new(bytes.Buffer)
 
 	for _, test := range tests {
-		tmpl, err := PrintSolution(test.User)
+		tmpl, err := PrintSolution(test.Num, test.User)
 		if err != nil {
 			t.Error("Error occured while trying to make the template")
 		}

@@ -3,7 +3,6 @@ package quiz
 import (
 	"fmt"
 	"github.com/jroimartin/gocui"
-	"io/ioutil"
 )
 
 func endScreenLayout(g *gocui.Gui) error {
@@ -16,12 +15,17 @@ func endScreenLayout(g *gocui.Gui) error {
 		v.Title = "Quiz Over"
 		v.Wrap = true
 		g.Cursor = true
-		fmt.Fprintln(v, "End of quiz")
-		b, err := ioutil.ReadFile("Mark.Twain-Tom.Sawyer.txt")
-		if err != nil {
-			panic(err)
+
+		fmt.Fprintf(v, "End of quiz\n\n")
+
+		for index, answer := range userAnswers {
+			tmpl, err := PrintSolution(index+1, answer)
+			if err != nil {
+				panic(err)
+			}
+			err = tmpl.Execute(v, answer)
 		}
-		fmt.Fprintf(v, "%s", b)
+
 		if _, err := g.SetCurrentView(EndScreen); err != nil {
 			return err
 		}
