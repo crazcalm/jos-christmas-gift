@@ -102,6 +102,7 @@ func ABCDLayout(g *gocui.Gui) error {
 func writeInfoToLayout(g *gocui.Gui, q Question) {
 	//Write question
 	questionBox := getQuestionBoxView(g)
+	questionBox.Clear()
 	fmt.Fprintln(questionBox, q.Question)
 
 	//Write answers

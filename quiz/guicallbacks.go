@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jroimartin/gocui"
 	"log"
-	"strings"
 )
 
 //CursorDown -- Callback used to scroll down
@@ -70,8 +69,6 @@ func SelectAnswer(g *gocui.Gui, v *gocui.View) error {
 	//User answers
 	userAnswers = append(userAnswers, a)
 
-	views := g.Views()
-
 	if !nextQuestionExist() {
 		g.SetManagerFunc(endScreenLayout)
 		err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, Quit)
@@ -101,13 +98,5 @@ func SelectAnswer(g *gocui.Gui, v *gocui.View) error {
 	//Write Question and Answers to layout
 	writeInfoToLayout(g, question)
 
-	for i, view := range views {
-
-		if strings.EqualFold(QuestionBox, view.Name()) {
-			view.Clear() //clear the question box
-			fmt.Fprintf(view, "%d - %s -- question box", i, view.Name())
-		}
-
-	}
 	return nil
 }
