@@ -8,7 +8,7 @@ import (
 
 func main() {
 	//Get questions
-	data, err := quiz.ReadCSV("testing.csv")
+	data, err := quiz.ReadCSV("questions.csv")
 	if err != nil {
 		log.Fatal(err)
 	}

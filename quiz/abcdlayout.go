@@ -38,6 +38,7 @@ func ABCDLayout(g *gocui.Gui) error {
 			return err
 		}
 		v.Title = "Question"
+		v.Wrap = true
 		fmt.Fprintln(v, Questions[QuestionCount].Question)
 	}
 

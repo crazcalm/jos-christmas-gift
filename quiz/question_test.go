@@ -1,6 +1,7 @@
 package quiz
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -17,6 +18,37 @@ func TestCorrectAnswer(t *testing.T) {
 	answer := result.CorrectAnswer()
 	if !strings.EqualFold(a1.Answer, answer.Answer) {
 		t.Error("Unable to select the correct answer for this question")
+	}
+}
+
+func TestShuffleQuestions(t *testing.T) {
+	a1 := Answer{"1", true}
+	a2 := Answer{"2", true}
+	a3 := Answer{"3", true}
+	a4 := Answer{"4", true}
+
+	//Empty the Questions pool
+	Questions = []Question{}
+
+	//Fill up the Questions pool
+	for i := 0; i < 10; i++ {
+		q := fmt.Sprintf("question%d", i)
+		Questions = append(Questions, Question{q, []Answer{a1, a2, a3, a4}, ""})
+	}
+
+	firstQuestion := Questions[0].Question
+	shuffled := false
+
+	for i := 0; i < 10; i++ {
+		ShuffleQuestions(Questions)
+
+		if !strings.EqualFold(firstQuestion, Questions[i].Question) {
+			shuffled = true
+		}
+	}
+
+	if !shuffled {
+		t.Error("ShuffleQuestions did not shuffle the questions...")
 	}
 }
 
@@ -51,6 +83,10 @@ func TestCurrentQuestion(t *testing.T) {
 	q2 := Question{"q2", []Answer{a, a, a, a}, "none"}
 	q3 := Question{"q3", []Answer{a, a, a, a}, "none"}
 
+	//clear Questions
+	Questions = []Question{}
+
+	//fill up the questions
 	Questions = append(Questions, q1, q2, q3)
 
 	var tests = []struct {

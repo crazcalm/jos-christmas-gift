@@ -25,6 +25,20 @@ type Question struct {
 	Explaination string
 }
 
+//ShuffleQuestions -- Shuffle the list of questions
+func ShuffleQuestions(qs []Question) {
+	numOfQuestions := len(qs)
+	var tempt Question
+	var swapIndex int
+
+	for index := range qs {
+		swapIndex = rand.Intn(numOfQuestions)
+		tempt = qs[index]
+		qs[index] = qs[swapIndex]
+		qs[swapIndex] = tempt
+	}
+}
+
 //CorrectAnswer -- returns the correct answer to the question
 func (q *Question) CorrectAnswer() Answer {
 	var result Answer
@@ -95,5 +109,8 @@ func CreateQuestions(records [][]string) (err error) {
 		question.ShuffleAnswers()
 		Questions = append(Questions, question)
 	}
+	//Shuffle Questions
+	ShuffleQuestions(Questions)
+
 	return
 }
