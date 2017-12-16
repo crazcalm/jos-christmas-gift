@@ -25,6 +25,7 @@ func ReadCSV(path string) (records [][]string, err error) {
 
 	//Read the file
 	r := csv.NewReader(file)
+	r.LazyQuotes = true // Needed to except the existence of quotes within the statement fields
 
 	for {
 		record, err := r.Read()
