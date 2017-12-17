@@ -16,6 +16,8 @@ var (
 	Questions = []Question{}
 	//QuestionCount -- A counter used to keep track of which question was are using
 	QuestionCount = 0
+	//QuestionsLimit -- set the number of questions that will be used during the quiz
+	QuestionsLimit = 10
 )
 
 //Question -- struct to hold a question and its answers

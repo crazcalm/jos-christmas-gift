@@ -69,7 +69,7 @@ func SelectAnswer(g *gocui.Gui, v *gocui.View) error {
 	//User answers
 	userAnswers = append(userAnswers, a)
 
-	if !nextQuestionExist() {
+	if !nextQuestionExist() || len(userAnswers) >= QuestionsLimit {
 		g.SetManagerFunc(endScreenLayout)
 		err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, Quit)
 		if err != nil {
