@@ -37,7 +37,7 @@ func ABCDLayout(g *gocui.Gui) error {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		v.Title = "Question"
+		v.Title = "Question 1"
 		v.Wrap = true
 		fmt.Fprintln(v, Questions[QuestionCount].Question)
 	}
@@ -104,6 +104,7 @@ func writeInfoToLayout(g *gocui.Gui, q Question) {
 	//Write question
 	questionBox := getQuestionBoxView(g)
 	questionBox.Clear()
+	questionBox.Title = fmt.Sprintf("Question %d", QuestionCount+1)
 	fmt.Fprintln(questionBox, q.Question)
 
 	//Write answers
