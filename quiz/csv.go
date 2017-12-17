@@ -35,7 +35,6 @@ func ReadCSV(path string) (records [][]string, err error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(record)
 		records = append(records, record)
 	}
 
