@@ -30,7 +30,7 @@ func PrintSolution(num int, u UserAnswer) (tmpl *template.Template, err error) {
 
 //AnswerQuestionRatio -- A ratio used to let the user know how many questions are left
 func AnswerQuestionRatio(a, q int) (tmpl *template.Template, err error) {
-	ratio := fmt.Sprintf("%d/%d", a, q)
+	ratio := fmt.Sprintf("------> Final Score: %d/%d <------\n\n\n\n", a, q)
 	tmpl, err = template.New("AnswerQuestionRatio").Parse(ratio)
 	if err != nil {
 		log.Println(err)

@@ -66,8 +66,8 @@ func TestAnswerQuestionRatio(t *testing.T) {
 		Questions int
 		Expect    string
 	}{
-		{0, 10, "0/10"},
-		{2, 12, "2/12"},
+		{0, 10, "------> Final Score: 0/10 <------"},
+		{2, 12, "------> Final Score: 2/12 <------"},
 	}
 
 	//buffer used to check results
@@ -85,7 +85,7 @@ func TestAnswerQuestionRatio(t *testing.T) {
 		}
 
 		result := b.String()
-		if !strings.EqualFold(result, test.Expect) {
+		if !strings.Contains(result, test.Expect) {
 			t.Errorf("Expected %s, but got %s", test.Expect, result)
 		}
 

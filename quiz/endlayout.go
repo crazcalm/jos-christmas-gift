@@ -1,7 +1,6 @@
 package quiz
 
 import (
-	"fmt"
 	"github.com/jroimartin/gocui"
 )
 
@@ -16,7 +15,15 @@ func endScreenLayout(g *gocui.Gui) error {
 		v.Wrap = true
 		g.Cursor = true
 
-		fmt.Fprintf(v, "End of quiz\n\n")
+		correct, total := TotalScore(userAnswers)
+		scoreTmpl, err := AnswerQuestionRatio(correct, total)
+		if err != nil {
+			panic(err)
+		}
+		err = scoreTmpl.Execute(v, nil)
+		if err != nil {
+			panic(err)
+		}
 
 		for index, answer := range userAnswers {
 			tmpl, err := PrintSolution(index+1, answer)
@@ -24,6 +31,9 @@ func endScreenLayout(g *gocui.Gui) error {
 				panic(err)
 			}
 			err = tmpl.Execute(v, answer)
+			if err != nil {
+				panic(err)
+			}
 		}
 
 		if _, err := g.SetCurrentView(EndScreen); err != nil {
