@@ -10,19 +10,16 @@ import (
 func PrintSolution(num int, u UserAnswer) (tmpl *template.Template, err error) {
 	var result string
 
-	//Figures out which answer the user selected
-	selectedAnswer := answersToLetters[u.Answer]
-
 	//Figures out if the answer the user selected is correct or not
 	correct := u.IsAnswerCorrect()
 
 	if correct {
-		result = fmt.Sprintf("You correctly selected %s", selectedAnswer)
+		result = fmt.Sprintf("Right")
 	} else {
-		result = fmt.Sprintf("You selected %s, which is wrong", selectedAnswer)
+		result = fmt.Sprintf("Wrong")
 	}
 
-	tmplString := fmt.Sprintf("%d -- Question: {{.Question.Question}}\n\n     - %s\n\n     - Correct Answer: %s\n\n\n\n", num, result, u.Question.Explaination)
+	tmplString := fmt.Sprintf("%d -- Question (%s): {{.Question.Question}}\n\nCorrect Answer --> %s\n\nExplaination --> %s\n\n\n\n", num, result, u.Question.CorrectAnswer().Answer, u.Question.Explaination)
 
 	tmpl, err = template.New("PrintSolution").Parse(tmplString)
 	if err != nil {

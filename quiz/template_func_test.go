@@ -31,8 +31,8 @@ func TestPrintSolution(t *testing.T) {
 		User     UserAnswer
 		Expected []string
 	}{
-		{1, correctAnswer, []string{"1 --", "Question: question", "You correctly selected A", "explanation"}},
-		{2, wrongAnswer, []string{"2 --", "Question: question", "You selected C, which is wrong", "explanation"}},
+		{1, correctAnswer, []string{"1 --", "Question (Right): question", "Correct Answer --> a1", "Explaination --> explanation"}},
+		{2, wrongAnswer, []string{"2 --", "Question (Wrong): question", "Correct Answer --> a1", "Explaination --> explanation"}},
 	}
 
 	//Used to check the results
