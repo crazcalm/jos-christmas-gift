@@ -6,7 +6,7 @@ import (
 
 func endScreenLayout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
-	if v, err := g.SetView(EndScreen, -1, -1, maxX, maxY); err != nil {
+	if v, err := g.SetView(EndScreen, 1, 1, maxX-1, maxY); err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
@@ -14,6 +14,7 @@ func endScreenLayout(g *gocui.Gui) error {
 		v.Title = "Quiz Over"
 		v.Wrap = true
 		g.Cursor = true
+		g.Highlight = true // frame the quiz answers
 
 		correct, total := TotalScore(userAnswers)
 		scoreTmpl, err := AnswerQuestionRatio(correct, total)
